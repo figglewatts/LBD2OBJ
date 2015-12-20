@@ -8,7 +8,7 @@ namespace LBD2OBJ.Types
 {
 	struct TMDHEADER
 	{
-		public uint ID; // should be 0x41
+		public int ID; // should be 0x41
 		public uint flags; // 0 if addresses are relative from top of block, 1 if from start of file
 		public uint numObjects;
 	}
@@ -22,6 +22,8 @@ namespace LBD2OBJ.Types
 		public uint primTop; // pointer to start of primitives
 		public uint numPrims;
 		public int scale; // unused
+		public VERTEX[] vertices;
+		public NORMAL[] normals;
 	}
 
 	struct PRIMITIVE
@@ -30,6 +32,23 @@ namespace LBD2OBJ.Types
 		public byte flag; // rendering info
 		public byte ilen; // length (in words) of packet data
 		public byte olen; // length (in words) of 2D drawing primitives
+		public PRIMITIVECLASSIFICATION classification;
+		public PRIMITIVEDATA data;
+	}
+
+	struct PRIMITIVECLASSIFICATION
+	{
+		public bool gouraudShaded;
+		public bool quad;
+		public bool textureMapped;
+		public bool unlit;
+	}
+
+	struct PRIMITIVEDATA
+	{
+		public int[] triangleIndices;
+		public int[] normalIndices;
+		public UV[] uvCoords;
 	}
 
 	struct VERTEX
@@ -46,12 +65,17 @@ namespace LBD2OBJ.Types
 		public FixedPoint nZ;
 	}
 
+	struct UV
+	{
+		public short U;
+		public short V;
+	}
+
 	struct TMD
 	{
 		public TMDHEADER header;
+		public bool fixP;
+		public long objTop;
 		public OBJECT[] objTable;
-		public PRIMITIVE[] primTable;
-		public VERTEX[] vertTable;
-		public NORMAL[] normTable;
 	}
 }
