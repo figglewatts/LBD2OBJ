@@ -24,6 +24,7 @@ namespace LBD2OBJ.Types
 		public int scale; // unused
 		public VERTEX[] vertices;
 		public NORMAL[] normals;
+		public PRIMITIVE[] primitives;
 	}
 
 	struct PRIMITIVE
@@ -41,13 +42,15 @@ namespace LBD2OBJ.Types
 		public bool gouraudShaded;
 		public bool quad;
 		public bool textureMapped;
-		public bool unlit;
+		public bool unlit; // if unlit, there are no normals
+		public bool gradation;
+		public bool twoSided;
 	}
 
 	struct PRIMITIVEDATA
 	{
-		public int[] triangleIndices;
-		public int[] normalIndices;
+		public short[] triangleIndices;
+		public short[] normalIndices;
 		public UV[] uvCoords;
 	}
 
@@ -67,8 +70,8 @@ namespace LBD2OBJ.Types
 
 	struct UV
 	{
-		public short U;
-		public short V;
+		public byte U;
+		public byte V;
 	}
 
 	struct TMD
