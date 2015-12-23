@@ -39,6 +39,7 @@ namespace LBD2OBJ.Types
 
 	struct PRIMITIVECLASSIFICATION
 	{
+		public bool skip;
 		public bool gouraudShaded;
 		public bool quad;
 		public bool textureMapped;
@@ -49,16 +50,86 @@ namespace LBD2OBJ.Types
 
 	struct PRIMITIVEDATA
 	{
+		public short triangleIndexOffset;
 		public short[] triangleIndices;
+		public short normalIndexOffset;
 		public short[] normalIndices;
 		public UV[] uvCoords;
 	}
 
 	struct VERTEX
 	{
-		public short X;
-		public short Y;
-		public short Z;
+		public float X;
+		public float Y;
+		public float Z;
+
+		public VERTEX(int x, int y, int z)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+		}
+
+		public static VERTEX operator + (VERTEX a, VERTEX b)
+		{
+			VERTEX returnVal = new VERTEX();
+			returnVal.X = (a.X + b.X);
+			returnVal.Y = (a.Y + b.Y);
+			returnVal.Y = (a.Z + b.Z);
+			return returnVal;
+		}
+		public static VERTEX operator - (VERTEX a)
+		{
+			VERTEX returnVal = new VERTEX();
+			returnVal.X = -a.X;
+			returnVal.Y = -a.Y;
+			returnVal.Z = -a.Z;
+			return returnVal;
+		}
+		public static VERTEX operator - (VERTEX a, VERTEX b)
+		{
+			return a + -b;
+		}
+		public static VERTEX operator * (VERTEX a, float s)
+		{
+			VERTEX returnVal = new VERTEX();
+			returnVal.X = (a.X * s);
+			returnVal.Y = (a.Y * s);
+			returnVal.Z = (a.Z * s);
+			return returnVal;
+		}
+		public static VERTEX operator / (VERTEX a, float s)
+		{
+			VERTEX returnVal = new VERTEX();
+			returnVal.X = (a.X / s);
+			returnVal.Y = (a.Y / s);
+			returnVal.Z = (a.Z / s);
+			return returnVal;
+		}
+
+		public static float Dot (VERTEX a, VERTEX b)
+		{
+			Console.WriteLine("Getting dot product of:");
+			Console.WriteLine("{0}, {1}, {2}", a.X, a.Y, a.Z);
+			Console.WriteLine("{0}, {1}, {2}", b.X, b.Y, b.Z);
+			return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+		}
+		public static VERTEX Cross (VERTEX a, VERTEX b)
+		{
+			VERTEX returnVal = new VERTEX();
+			returnVal.X = a.Y * b.Z - a.Z * b.Y;
+			returnVal.Y = a.Z * b.X - a.X * b.Z;
+			returnVal.Z = a.X * b.Y - a.Y * b.X;
+			return returnVal;
+		}
+		public static float Magnitude(VERTEX a)
+		{
+			return (float)Math.Sqrt(a.X * a.X + a.Y * a.Y + a.Z * a.Z);
+		}
+		public static VERTEX Normalize(VERTEX a)
+		{
+			return a / Magnitude(a);
+		}
 	}
 
 	struct NORMAL

@@ -32,5 +32,10 @@ namespace LBD2OBJ.Types
 			IntegralPart = integralPart;
 			DecimalPart = decimalPart;
 		}
+
+		public override string ToString()
+		{
+			return IntegralPart + "." + DecimalPart;
+		}
 	}
 }
