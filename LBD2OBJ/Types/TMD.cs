@@ -54,6 +54,7 @@ namespace LBD2OBJ.Types
 		public short[] triangleIndices;
 		public short normalIndexOffset;
 		public short[] normalIndices;
+		public short uvIndexOffset;
 		public UV[] uvCoords;
 	}
 

@@ -10,20 +10,41 @@ namespace LBD2OBJ
 {
 	class Program
 	{
+		public static bool separateObjects = false;
+	
 		static void Main(string[] args)
 		{
 			Console.WriteLine("LBD2OBJ - Made by Figglewatts 2015");
 			if (args.Length > 0)
 			{
-				foreach (string arg in args)
+				int argCount = 0;
+				if (args[0] == "-s")
 				{
-					if (Path.GetExtension(arg).ToLower().Equals("tmd"))
+					separateObjects = true;
+					argCount++;
+				}
+				for (int i = argCount; i < args.Length; i++)
+				{
+					string arg = args[i];
+					if (Path.GetExtension(arg).ToLower().Equals(".tmd"))
 					{
-						// convert from tmd
+						string filePath = arg;
+						WriteToObj(filePath, ConvertTMD(filePath));
 					}
-					else if (Path.GetExtension(arg).ToLower().Equals("lbd"))
+					else if (Path.GetExtension(arg).ToLower().Equals(".lbd"))
 					{
-						// convert from lbd
+						separateObjects = true;
+						WriteToObj(arg, getTMDFromLBD(arg), "_LBD", separateObjects);
+						separateObjects = false;
+						TMD[] tmds = getTMDFromMOMinLBD(arg);
+						foreach (TMD tmd in tmds)
+						{
+							WriteToObj(arg, tmd, "_MOM");
+						}
+					}
+					else if (Path.GetExtension(arg).ToLower().Equals(".mom"))
+					{
+						WriteToObj(arg, getTMDFromMOM(arg), "_MOM");
 					}
 					else
 					{
@@ -34,8 +55,32 @@ namespace LBD2OBJ
 			else
 			{
 				Console.WriteLine("Please enter path to file...");
+				Console.Write(">");
 				string filePath = Console.ReadLine();
-				WriteToObj(filePath, ConvertTMD(filePath));
+
+				if (Path.GetExtension(filePath).ToLower().Equals(".tmd"))
+				{
+					WriteToObj(filePath, ConvertTMD(filePath));
+				}
+				else if (Path.GetExtension(filePath).ToLower().Equals(".lbd"))
+				{
+					separateObjects = true;
+					WriteToObj(filePath, getTMDFromLBD(filePath), "_LBD", separateObjects);
+					separateObjects = false;
+					TMD[] tmds = getTMDFromMOMinLBD(filePath);
+					foreach (TMD tmd in tmds)
+					{
+						WriteToObj(filePath, tmd, "_MOM");
+					}
+				}
+				else if (Path.GetExtension(filePath).ToLower().Equals(".mom"))
+				{
+					WriteToObj(filePath, getTMDFromMOM(filePath), "_MOM");
+				}
+				else
+				{
+					Console.WriteLine("Invalid input file. Extension: {0} not recognized.", Path.GetExtension(filePath));
+				}
 			}
 			Console.Write("Press ENTER to exit...");
             Console.ReadLine();
@@ -44,33 +89,104 @@ namespace LBD2OBJ
 		public static TMD ConvertTMD(string path)
 		{
 			Console.WriteLine("Converting TMD...");
-			TMD tmd;
+			TMD tmd = new TMD();
 			using (BinaryReader b = new BinaryReader(File.Open(path, FileMode.Open)))
 			{
-				tmd.header = readHeader(b);
-				tmd.fixP = (tmd.header.flags & 1) == 1 ? true : false; // if true, pointers are fixed; if false, pointers are relative
-				
-				tmd.objTop = b.BaseStream.Position;
-				tmd.objTable = new OBJECT[tmd.header.numObjects];
-				short verticesRunningCount = 0;
-				short normalsRunningCount = 0;
-				int objCount = 0;
-				for (int i = 0; i < tmd.header.numObjects; i++)
-				{
-					Console.WriteLine("Object {0}", objCount);
-					tmd.objTable[i] = readObject(b, tmd.objTop);
-					
-					for (int j = 0; j < tmd.objTable[i].numPrims; j++)
-					{
-						tmd.objTable[i].primitives[j].data.triangleIndexOffset = verticesRunningCount;
-						tmd.objTable[i].primitives[j].data.normalIndexOffset = normalsRunningCount;
-					}
-					verticesRunningCount += (short)tmd.objTable[i].numVerts;
-					normalsRunningCount += (short)tmd.objTable[i].numNorms;
-					objCount++;
-				}
+				readTMD(b, ref tmd);
 			}
 			return tmd;
+		}
+
+		private static TMD getTMDFromLBD(string path)
+		{
+			Console.WriteLine("Converting LBD...");
+			TMD tmd = new TMD();
+			using (BinaryReader b = new BinaryReader(File.Open(path, FileMode.Open)))
+			{
+				// read the address of the TMD file contained within the header
+				b.BaseStream.Seek(8, SeekOrigin.Begin);
+				int tmdAddr = b.ReadInt32();
+				tmdAddr += 24;
+				b.BaseStream.Seek(tmdAddr, SeekOrigin.Begin);
+				readTMD(b, ref tmd);
+			}
+			return tmd;
+		}
+
+		private static TMD[] getTMDFromMOMinLBD(string path)
+		{
+			Console.WriteLine("Converting embedded MOM...");
+			TMD[] tmds;
+			using (BinaryReader b = new BinaryReader(File.Open(path, FileMode.Open)))
+			{
+				// read the address of the MML file contained within the LBD
+				b.BaseStream.Seek(16, SeekOrigin.Begin);
+				int mmlAddr = b.ReadInt32();
+				b.BaseStream.Seek(mmlAddr, SeekOrigin.Begin);
+				long mmlTop = b.BaseStream.Position;
+				b.BaseStream.Seek(4, SeekOrigin.Current);
+				int numberOfMOMs = b.ReadInt32();
+				tmds = new TMD[numberOfMOMs];
+				long addrCache = 0;
+				for (int i = 0; i < numberOfMOMs; i++)
+				{
+					tmds[i] = new TMD();
+				
+					int momAddr = b.ReadInt32();
+					addrCache = b.BaseStream.Position;
+					b.BaseStream.Seek(mmlTop, SeekOrigin.Begin);
+					b.BaseStream.Seek(momAddr, SeekOrigin.Current);
+					long momTop = b.BaseStream.Position;
+					b.BaseStream.Seek(8, SeekOrigin.Current);
+					int tmdAddr = b.ReadInt32();
+					b.BaseStream.Seek(momTop, SeekOrigin.Begin);
+					b.BaseStream.Seek(tmdAddr, SeekOrigin.Current);
+					readTMD(b, ref tmds[i]);
+					b.BaseStream.Seek(addrCache, SeekOrigin.Begin);
+				}
+			}
+			return tmds;
+		}
+
+		private static TMD getTMDFromMOM(string path)
+		{
+			Console.WriteLine("Converting MOM...");
+			TMD tmd = new TMD();
+			using (BinaryReader b = new BinaryReader(File.Open(path, FileMode.Open)))
+			{
+				// read the address of the TMD file contained within the MOM
+				b.BaseStream.Seek(8, SeekOrigin.Begin);
+				int tmdAddr = b.ReadInt32();
+				b.BaseStream.Seek(tmdAddr, SeekOrigin.Begin);
+				readTMD(b, ref tmd);
+			}
+			return tmd;
+		}
+
+		private static void readTMD(BinaryReader b, ref TMD tmd)
+		{
+			tmd.header = readHeader(b);
+			tmd.fixP = (tmd.header.flags & 1) == 1 ? true : false; // if true, pointers are fixed; if false, pointers are relative
+
+			tmd.objTop = b.BaseStream.Position;
+			tmd.objTable = new OBJECT[tmd.header.numObjects];
+			short verticesRunningCount = 0;
+			short normalsRunningCount = 0;
+			int objCount = 0;
+			for (int i = 0; i < tmd.header.numObjects; i++)
+			{
+				Console.WriteLine("Object {0}", objCount);
+				tmd.objTable[i] = readObject(b, tmd.objTop);
+
+				for (int j = 0; j < tmd.objTable[i].numPrims; j++)
+				{
+					tmd.objTable[i].primitives[j].data.triangleIndexOffset = verticesRunningCount;
+					tmd.objTable[i].primitives[j].data.normalIndexOffset = normalsRunningCount;
+				}
+				verticesRunningCount += (short)tmd.objTable[i].numVerts;
+				normalsRunningCount += (short)tmd.objTable[i].numNorms;
+				objCount++;
+			}
 		}
 
 		private static TMDHEADER readHeader(BinaryReader b)
@@ -99,21 +215,24 @@ namespace LBD2OBJ
 			long cachedPosition = b.BaseStream.Position; // cache position so we can return
 
 			// go to address of vertices for object and load them
-			b.BaseStream.Seek(objTop + obj.vertTop, SeekOrigin.Begin);
+			b.BaseStream.Seek(objTop, SeekOrigin.Begin);
+			b.BaseStream.Seek(obj.vertTop, SeekOrigin.Current);
 			for (int v = 0; v < obj.numVerts; v++)
 			{
 				obj.vertices[v] = readVertex(b);
 			}
 
 			// go to address of normals for object and load them
-			b.BaseStream.Seek(objTop + obj.normTop, SeekOrigin.Begin);
+			b.BaseStream.Seek(objTop, SeekOrigin.Begin);
+			b.BaseStream.Seek(obj.normTop, SeekOrigin.Current);
 			for (int n = 0; n < obj.numNorms; n++)
 			{
 				obj.normals[n] = readNormal(b);
 			}
 
 			// go to address of primitives for object and load them
-			b.BaseStream.Seek(objTop + obj.primTop, SeekOrigin.Begin);
+			b.BaseStream.Seek(objTop, SeekOrigin.Begin);
+			b.BaseStream.Seek(obj.primTop, SeekOrigin.Current);
 			for (int p = 0; p < obj.numPrims; p++)
 			{
 				obj.primitives[p] = readPrimitive(b, obj.vertices);
@@ -619,38 +738,6 @@ namespace LBD2OBJ
 				indices[smallest] = indices[i + 1];
 				indices[i + 1] = t;
 			}
-			
-			
-			/*// calculate surface normal
-			VERTEX normal = new VERTEX(0, 0, 0);
-			normal = VERTEX.Cross(vertices[indices[0]], vertices[indices[1]]); // 0 and 1 are arbitrary, any differing index values will do
-
-			for (int i = 0; i < 2; i++)
-			{
-				VERTEX v1 = vertices[indices[i]];
-
-				float smallestTestVal = 0;
-				int smallestIndex = -1;
-
-				for (int j = i + 1; j < 4; j++)
-				{
-					VERTEX v2 = vertices[indices[j]];
-					float testVal = VERTEX.Dot(normal, VERTEX.Cross(v1 - center, v2 - center));
-
-					if (testVal < smallestTestVal)
-					{
-						smallestTestVal = testVal;
-						smallestIndex = j;
-					}
-				}
-
-				if (smallestIndex == -1) { break; }
-
-				short t = indices[smallestIndex];
-				indices[smallestIndex] = indices[i + 1];
-				indices[i + 1] = t;
-				
-			}*/
 		}
 
 		private static UV readUV(BinaryReader b)
@@ -672,77 +759,147 @@ namespace LBD2OBJ
 			return input != 0 ? true : false;
 		}
 
-		public static void WriteToObj(string path, TMD tmd)
+		public static void WriteToObj(string path, TMD tmd, string prefix="", bool separateObjects=false)
 		{
-			using (StreamWriter w = new StreamWriter(Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + ".obj", false))
+			if (separateObjects)
 			{
-				w.WriteLine("# generated with LBD2OBJ");
-				w.WriteLine("# made by Figglewatts, 2015");
-				w.WriteLine("# check out www.lsdrevamped.net");
-				w.WriteLine("# </shamelessSelfPromotion>");
-			
-				List<VERTEX> vertexList = new List<VERTEX>();
-				List<NORMAL> normalList = new List<NORMAL>();
-				List<UV> uvList = new List<UV>();
-				Dictionary<PRIMITIVE, List<int>> uvIndices = new Dictionary<PRIMITIVE, List<int>>();
-			
-				foreach (OBJECT o in tmd.objTable)
+				for (int i = 0; i < tmd.header.numObjects; i++)
 				{
-					foreach (VERTEX v in o.vertices)
+					using (StreamWriter w = new StreamWriter(Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + prefix + "_" + i + ".obj", false))
 					{
-						vertexList.Add(v);
-					}
-					foreach (NORMAL n in o.normals)
-					{
-						normalList.Add(n);
-					}
+						w.WriteLine("# generated with LBD2OBJ");
+						w.WriteLine("# made by Figglewatts, 2015");
+						w.WriteLine("# check out www.lsdrevamped.net");
+						w.WriteLine("# </shamelessSelfPromotion>\n");
 
-					int uvIndex = 1;
-					foreach (PRIMITIVE p in o.primitives)
-					{
-						if (!p.classification.textureMapped) { continue; }
+						List<VERTEX> vertexList = new List<VERTEX>();
+						List<NORMAL> normalList = new List<NORMAL>();
+						List<UV> uvList = new List<UV>();
+						Dictionary<PRIMITIVE, List<int>> uvIndices = new Dictionary<PRIMITIVE, List<int>>();
 
-						uvIndices.Add(p, new List<int>());
-						foreach (UV uv in p.data.uvCoords)
+						OBJECT o = tmd.objTable[i];
+
+						foreach (VERTEX v in o.vertices)
 						{
-							uvList.Add(uv);
-							uvIndices[p].Add(uvIndex);
-                            uvIndex++;
+							vertexList.Add(v);
 						}
+						foreach (NORMAL n in o.normals)
+						{
+							normalList.Add(n);
+						}
+
+						int uvIndex = 1;
+						foreach (PRIMITIVE p in o.primitives)
+						{
+							if (!p.classification.textureMapped) { continue; }
+
+							uvIndices.Add(p, new List<int>());
+							foreach (UV uv in p.data.uvCoords)
+							{
+								uvList.Add(uv);
+								uvIndices[p].Add(uvIndex);
+								uvIndex++;
+							}
+						}
+
+						foreach (VERTEX v in vertexList)
+						{
+							writeVertex(v, w);
+						}
+						foreach (UV uv in uvList)
+						{
+							writeUV(uv, w);
+						}
+						foreach (NORMAL n in normalList)
+						{
+							writeNormal(n, w);
+						}
+
+						writeObject(w, i);
+						foreach (PRIMITIVE p in o.primitives)
+						{
+							if (p.classification.textureMapped)
+							{
+								writeFace(p, w, uvIndices[p]);
+							}
+							else
+							{
+								writeFace(p, w);
+							}
+						}
+
 					}
 				}
+			}
+			else
+			{
+				using (StreamWriter w = new StreamWriter(Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + prefix + ".obj", false))
+				{
+					w.WriteLine("# generated with LBD2OBJ");
+					w.WriteLine("# made by Figglewatts, 2015");
+					w.WriteLine("# check out www.lsdrevamped.net");
+					w.WriteLine("# </shamelessSelfPromotion>");
 
-				foreach (VERTEX v in vertexList)
-				{
-					writeVertex(v, w);
-				}
-				foreach (UV uv in uvList)
-				{
-					writeUV(uv, w);
-				}
-				foreach (NORMAL n in normalList)
-				{
-					writeNormal(n, w);
-				}
+					List<VERTEX> vertexList = new List<VERTEX>();
+					List<NORMAL> normalList = new List<NORMAL>();
+					List<UV> uvList = new List<UV>();
+					Dictionary<PRIMITIVE, List<int>> uvIndices = new Dictionary<PRIMITIVE, List<int>>();
 
-				int objCount = 0;
-				foreach (OBJECT o in tmd.objTable)
-				{
-					writeObject(w, objCount);
-					foreach (PRIMITIVE p in o.primitives)
+					int numObjects = 0;
+					foreach (OBJECT o in tmd.objTable)
 					{
-						if (p.classification.textureMapped)
+						foreach (VERTEX v in o.vertices)
 						{
-							writeFace(p, w, uvIndices[p]);
+							vertexList.Add(v);
 						}
-						else
+						foreach (NORMAL n in o.normals)
 						{
-							writeFace(p, w);
+							normalList.Add(n);
 						}
-					}
-					objCount++;
-				}
 
+						int uvIndex = 1;
+						foreach (PRIMITIVE p in o.primitives)
+						{
+							if (!p.classification.textureMapped) { continue; }
+
+							uvIndices.Add(p, new List<int>());
+							foreach (UV uv in p.data.uvCoords)
+							{
+								uvList.Add(uv);
+								uvIndices[p].Add(uvIndex);
+								uvIndex++;
+							}
+						}
+
+						foreach (VERTEX v in vertexList)
+						{
+							writeVertex(v, w);
+						}
+						foreach (UV uv in uvList)
+						{
+							writeUV(uv, w);
+						}
+						foreach (NORMAL n in normalList)
+						{
+							writeNormal(n, w);
+						}
+
+						writeObject(w, numObjects);
+						foreach (PRIMITIVE p in o.primitives)
+						{
+							if (p.classification.textureMapped)
+							{
+								writeFace(p, w, uvIndices[p]);
+							}
+							else
+							{
+								writeFace(p, w);
+							}
+						}
+						numObjects++;
+					}
+
+				}
 			}
 		}
 		
@@ -847,7 +1004,13 @@ namespace LBD2OBJ
 		private static void writeFacePart(PRIMITIVEDATA data, int i, bool normals, bool UVs, bool gouraud, List<int> uvIndex, StreamWriter w)
 		{
 			
-			w.Write((data.triangleIndices[i] + data.triangleIndexOffset));
+			w.Write((data.triangleIndices[i] + (separateObjects ? 0 : data.triangleIndexOffset)));
+			if (UVs)
+			{
+				w.Write("/" + uvIndex[i]);
+			}
+
+			/*
 			if (!gouraud)
 			{
 				if (!normals && UVs)
@@ -856,11 +1019,11 @@ namespace LBD2OBJ
 				}
 				else if (normals && !UVs)
 				{
-					w.Write("//" + (data.normalIndices[0] + data.normalIndexOffset));
+					w.Write("//" + (data.normalIndices[0] + (separateObjects ? 0 : data.normalIndexOffset)));
 				}
 				else if (normals && UVs)
 				{
-					w.Write("/" + uvIndex[i] + "/" + (data.normalIndices[0] + data.normalIndexOffset));
+					w.Write("/" + uvIndex[i] + "/" + (data.normalIndices[0] + (separateObjects ? 0 : data.normalIndexOffset)));
 				}
 			}
 			else
@@ -871,13 +1034,13 @@ namespace LBD2OBJ
 				}
 				else if (normals && !UVs)
 				{
-					w.Write("//" + (data.normalIndices[i] + data.normalIndexOffset));
+					w.Write("//" + (data.normalIndices[i] + (separateObjects ? 0 : data.normalIndexOffset)));
 				}
 				else if (normals && UVs)
 				{
-					w.Write("/" + uvIndex[i] + "/" + (data.normalIndices[i] + data.normalIndexOffset));
+					w.Write("/" + uvIndex[i] + "/" + (data.normalIndices[i] + (separateObjects ? 0 : data.normalIndexOffset)));
 				}
-			}
+			}*/
 			w.Write(" ");
 		}
 	}
