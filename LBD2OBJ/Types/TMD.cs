@@ -76,7 +76,7 @@ namespace LBD2OBJ.Types
 			VERTEX returnVal = new VERTEX();
 			returnVal.X = (a.X + b.X);
 			returnVal.Y = (a.Y + b.Y);
-			returnVal.Y = (a.Z + b.Z);
+			returnVal.Z = (a.Z + b.Z);
 			return returnVal;
 		}
 		public static VERTEX operator - (VERTEX a)
