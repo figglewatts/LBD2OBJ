@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LBD2OBJ.Types
+namespace LBD2OBJLib.Types
 {
-	struct TMDHEADER
+	public struct TMDHEADER
 	{
 		public int ID; // should be 0x41
 		public uint flags; // 0 if addresses are relative from top of block, 1 if from start of file
 		public uint numObjects;
 	}
 
-	struct OBJECT
+	public struct OBJECT
 	{
 		public uint vertTop; // pointer to start of vertices
 		public uint numVerts;
@@ -27,7 +27,7 @@ namespace LBD2OBJ.Types
 		public PRIMITIVE[] primitives;
 	}
 
-	struct PRIMITIVE
+	public struct PRIMITIVE
 	{
 		public byte mode; // b001 - poly, b010 - line, b011 - sprite
 		public byte flag; // rendering info
@@ -37,7 +37,7 @@ namespace LBD2OBJ.Types
 		public PRIMITIVEDATA data;
 	}
 
-	struct PRIMITIVECLASSIFICATION
+	public struct PRIMITIVECLASSIFICATION
 	{
 		public bool skip;
 		public bool gouraudShaded;
@@ -48,7 +48,7 @@ namespace LBD2OBJ.Types
 		public bool twoSided;
 	}
 
-	struct PRIMITIVEDATA
+	public struct PRIMITIVEDATA
 	{
 		public short triangleIndexOffset;
 		public short[] triangleIndices;
@@ -58,7 +58,7 @@ namespace LBD2OBJ.Types
 		public UV[] uvCoords;
 	}
 
-	struct VERTEX
+	public struct VERTEX
 	{
 		public float X;
 		public float Y;
@@ -133,20 +133,20 @@ namespace LBD2OBJ.Types
 		}
 	}
 
-	struct NORMAL
+	public struct NORMAL
 	{
 		public FixedPoint nX;
 		public FixedPoint nY;
 		public FixedPoint nZ;
 	}
 
-	struct UV
+	public struct UV
 	{
 		public byte U;
 		public byte V;
 	}
 
-	struct TMD
+	public struct TMD
 	{
 		public TMDHEADER header;
 		public bool fixP;

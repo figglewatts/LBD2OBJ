@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LBD2OBJ.Types
+namespace LBD2OBJLib.Types
 {
 	class FixedPoint
 	{
