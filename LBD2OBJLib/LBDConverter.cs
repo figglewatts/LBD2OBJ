@@ -692,7 +692,7 @@ namespace LBD2OBJLib
 			return input != 0 ? true : false;
 		}
 
-		public static void WriteToObj(string path, TMD tmd, string prefix = "", bool separateObjects = false)
+		public static void WriteToObj(string path, TMD tmd, string prefix = "")
 		{
 			if (separateObjects)
 			{

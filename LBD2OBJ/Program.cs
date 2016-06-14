@@ -7,8 +7,6 @@ namespace LBD2OBJ
 {
 	class Program
 	{
-		public static bool separateObjects = false;
-	
 		static void Main(string[] args)
 		{
 			Console.WriteLine("LBD2OBJ - Made by Figglewatts 2015");
@@ -17,7 +15,7 @@ namespace LBD2OBJ
 				int argCount = 0;
 				if (args[0] == "-s")
 				{
-					separateObjects = true;
+					LBDConverter.CreateSeparateOBJsForMultipleObjects(true);
 					argCount++;
 				}
 				for (int i = argCount; i < args.Length; i++)
@@ -30,9 +28,9 @@ namespace LBD2OBJ
 					}
 					else if (Path.GetExtension(arg).ToLower().Equals(".lbd"))
 					{
-						separateObjects = true;
-						LBDConverter.WriteToObj(arg, LBDConverter.GetTMDFromLBD(arg), "_LBD", separateObjects);
-						separateObjects = false;
+						LBDConverter.CreateSeparateOBJsForMultipleObjects(true);
+						LBDConverter.WriteToObj(arg, LBDConverter.GetTMDFromLBD(arg), "_LBD");
+						LBDConverter.CreateSeparateOBJsForMultipleObjects(false);
 						TMD[] tmds = LBDConverter.GetTMDFromMOMinLBD(arg);
 						foreach (TMD tmd in tmds)
 						{
@@ -61,9 +59,9 @@ namespace LBD2OBJ
 				}
 				else if (Path.GetExtension(filePath).ToLower().Equals(".lbd"))
 				{
-					separateObjects = true;
-					LBDConverter.WriteToObj(filePath, LBDConverter.GetTMDFromLBD(filePath), "_LBD", separateObjects);
-					separateObjects = false;
+					LBDConverter.CreateSeparateOBJsForMultipleObjects(true);
+					LBDConverter.WriteToObj(filePath, LBDConverter.GetTMDFromLBD(filePath), "_LBD");
+					LBDConverter.CreateSeparateOBJsForMultipleObjects(false);
 					TMD[] tmds = LBDConverter.GetTMDFromMOMinLBD(filePath);
 					foreach (TMD tmd in tmds)
 					{
