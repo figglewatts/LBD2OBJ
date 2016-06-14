@@ -55,6 +55,7 @@ namespace LBD2OBJLib
 				// read the address of the MML file contained within the LBD
 				b.BaseStream.Seek(16, SeekOrigin.Begin);
 				int mmlAddr = b.ReadInt32();
+				if (mmlAddr > b.BaseStream.Length) { return null; } // MML file does not exist
 				b.BaseStream.Seek(mmlAddr, SeekOrigin.Begin);
 				long mmlTop = b.BaseStream.Position;
 				b.BaseStream.Seek(4, SeekOrigin.Current);

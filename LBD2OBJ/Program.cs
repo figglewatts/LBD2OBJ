@@ -32,9 +32,12 @@ namespace LBD2OBJ
 						LBDConverter.WriteToObj(arg, LBDConverter.GetTMDFromLBD(arg), "_LBD");
 						LBDConverter.CreateSeparateOBJsForMultipleObjects(false);
 						TMD[] tmds = LBDConverter.GetTMDFromMOMinLBD(arg);
-						foreach (TMD tmd in tmds)
+						if (tmds != null)
 						{
-							LBDConverter.WriteToObj(arg, tmd, "_MOM");
+							foreach (TMD tmd in tmds)
+							{
+								LBDConverter.WriteToObj(arg, tmd, "_MOM");
+							}
 						}
 					}
 					else if (Path.GetExtension(arg).ToLower().Equals(".mom"))
@@ -63,9 +66,12 @@ namespace LBD2OBJ
 					LBDConverter.WriteToObj(filePath, LBDConverter.GetTMDFromLBD(filePath), "_LBD");
 					LBDConverter.CreateSeparateOBJsForMultipleObjects(false);
 					TMD[] tmds = LBDConverter.GetTMDFromMOMinLBD(filePath);
-					foreach (TMD tmd in tmds)
+					if (tmds != null)
 					{
-						LBDConverter.WriteToObj(filePath, tmd, "_MOM");
+						foreach (TMD tmd in tmds)
+						{
+							LBDConverter.WriteToObj(filePath, tmd, "_MOM");
+						}
 					}
 				}
 				else if (Path.GetExtension(filePath).ToLower().Equals(".mom"))
