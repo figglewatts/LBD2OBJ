@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LBD2OBJLib.Types
 {
-	class FixedPoint
+	public class FixedPoint
 	{
 		public int IntegralPart { get; set; }
 		public int DecimalPart { get; set; }
@@ -22,8 +17,6 @@ namespace LBD2OBJLib.Types
 
 			byte[] _data = new byte[2];
 			data.CopyTo(_data, 0);
-
-			
 
 			bool isNegative = (_data[0] & SIGN_MASK) == 128;
 			int integralPart = (_data[0] & INTEGRAL_MASK) * (isNegative ? -1 : 1);
