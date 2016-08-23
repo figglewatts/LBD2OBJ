@@ -9,13 +9,16 @@ namespace LBD2OBJ
 	{
 		static void Main(string[] args)
 		{
+			bool separateObjects = false;
+		
 			Console.WriteLine("LBD2OBJ - Made by Figglewatts 2015");
 			if (args.Length > 0)
 			{
 				int argCount = 0;
 				if (args[0] == "-s")
 				{
-					LBDConverter.CreateSeparateOBJsForMultipleObjects(true);
+					separateObjects = true;
+					LBDConverter.CreateSeparateOBJsForMultipleObjects(separateObjects);
 					argCount++;
 				}
 				for (int i = argCount; i < args.Length; i++)
@@ -28,7 +31,7 @@ namespace LBD2OBJ
 					}
 					else if (Path.GetExtension(arg).ToLower().Equals(".lbd"))
 					{
-						LBDConverter.CreateSeparateOBJsForMultipleObjects(true);
+						LBDConverter.CreateSeparateOBJsForMultipleObjects(separateObjects);
 						LBDConverter.WriteToObj(arg, LBDConverter.GetTMDFromLBD(arg), "_LBD");
 						LBDConverter.CreateSeparateOBJsForMultipleObjects(false);
 						TMD[] tmds = LBDConverter.GetTMDFromMOMinLBD(arg);
