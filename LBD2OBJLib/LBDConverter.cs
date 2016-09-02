@@ -248,7 +248,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-54 d
-							Console.WriteLine("fig. 2-54 d");
+							//Console.WriteLine("fig. 2-54 d");
 							data.uvCoords = new UV[4];
 							for (int i = 0; i < 4; i++)
 							{
@@ -266,7 +266,7 @@ namespace LBD2OBJLib
 						else
 						{
 							// fig. 2-54 c
-							Console.WriteLine("fig. 2-54 c");
+							//Console.WriteLine("fig. 2-54 c");
 							skipBytes(16, b);
 							data.triangleIndices = new short[4];
 							for (int i = 0; i < 4; i++)
@@ -280,7 +280,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-54 b
-							Console.WriteLine("fig. 2-54 b");
+							//Console.WriteLine("fig. 2-54 b");
 							data.uvCoords = new UV[4];
 							for (int i = 0; i < 4; i++)
 							{
@@ -297,7 +297,7 @@ namespace LBD2OBJLib
 						else
 						{
 							// fig. 2-54 a
-							Console.WriteLine("fig. 2-54 a");
+							//Console.WriteLine("fig. 2-54 a");
 							skipBytes(4, b);
 							data.triangleIndices = new short[4];
 							for (int i = 0; i < 4; i++)
@@ -314,7 +314,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-50 f
-							Console.WriteLine("fig. 2-50 f");
+							//Console.WriteLine("fig. 2-50 f");
 							data.uvCoords = new UV[4];
 							for (int i = 0; i < 4; i++)
 							{
@@ -335,7 +335,7 @@ namespace LBD2OBJLib
 							if (classification.gradation)
 							{
 								// fig. 2-50 e
-								Console.WriteLine("fig. 2-50 e");
+								//Console.WriteLine("fig. 2-50 e");
 								skipBytes(16, b);
 
 								data.normalIndices = new short[4];
@@ -349,7 +349,7 @@ namespace LBD2OBJLib
 							else
 							{
 								// fig. 2-50 d
-								Console.WriteLine("fig. 2-50 d");
+								//Console.WriteLine("fig. 2-50 d");
 								skipBytes(4, b);
 
 								data.normalIndices = new short[4];
@@ -367,7 +367,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-50 c
-							Console.WriteLine("fig. 2-50 c");
+							//Console.WriteLine("fig. 2-50 c");
 							data.uvCoords = new UV[4];
 							for (int i = 0; i < 4; i++)
 							{
@@ -390,7 +390,7 @@ namespace LBD2OBJLib
 							if (classification.gradation)
 							{
 								// fig. 2-50 b
-								Console.WriteLine("fig. 2-50 b");
+								//Console.WriteLine("fig. 2-50 b");
 								skipBytes(16, b);
 
 								data.normalIndices = new short[1];
@@ -406,7 +406,7 @@ namespace LBD2OBJLib
 							else
 							{
 								// fig. 2-50 a
-								Console.WriteLine("fig. 2-50 a");
+								//Console.WriteLine("fig. 2-50 a");
 								skipBytes(4, b);
 
 								data.normalIndices = new short[1];
@@ -437,7 +437,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-52 d
-							Console.WriteLine("fig. 2-52 d");
+							//Console.WriteLine("fig. 2-52 d");
 							data.uvCoords = new UV[3];
 							for (int i = 0; i < 3; i++)
 							{
@@ -456,7 +456,7 @@ namespace LBD2OBJLib
 						else
 						{
 							// fig. 2-52 c
-							Console.WriteLine("fig. 2-52 c");
+							//Console.WriteLine("fig. 2-52 c");
 							skipBytes(12, b);
 
 							data.triangleIndices = new short[3];
@@ -472,7 +472,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-52 b
-							Console.WriteLine("fig. 2-52 b");
+							//Console.WriteLine("fig. 2-52 b");
 							data.uvCoords = new UV[3];
 							for (int i = 0; i < 3; i++)
 							{
@@ -491,7 +491,7 @@ namespace LBD2OBJLib
 						else
 						{
 							// fig. 2-52 a
-							Console.WriteLine("fig. 2-52 a");
+							//Console.WriteLine("fig. 2-52 a");
 							skipBytes(4, b);
 
 							data.triangleIndices = new short[3];
@@ -510,7 +510,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-48 f
-							Console.WriteLine("fig. 2-48 f");
+							//Console.WriteLine("fig. 2-48 f");
 							data.uvCoords = new UV[3];
 							for (int i = 0; i < 3; i++)
 							{
@@ -531,7 +531,7 @@ namespace LBD2OBJLib
 							if (classification.gradation)
 							{
 								// fig. 2-48 e
-								Console.WriteLine("fig. 2-48 e");
+								//Console.WriteLine("fig. 2-48 e");
 								skipBytes(12, b);
 
 								data.normalIndices = new short[3];
@@ -545,7 +545,7 @@ namespace LBD2OBJLib
 							else
 							{
 								// fig. 2-48 d
-								Console.WriteLine("fig. 2-48 d");
+								//Console.WriteLine("fig. 2-48 d");
 								skipBytes(4, b);
 
 								data.normalIndices = new short[3];
@@ -563,7 +563,7 @@ namespace LBD2OBJLib
 						if (classification.textureMapped)
 						{
 							// fig. 2-48 c
-							Console.WriteLine("fig. 2-48 c");
+							//Console.WriteLine("fig. 2-48 c");
 							data.uvCoords = new UV[3];
 							for (int i = 0; i < 3; i++)
 							{
@@ -585,7 +585,7 @@ namespace LBD2OBJLib
 							if (classification.gradation)
 							{
 								// fig. 2-48 b
-								Console.WriteLine("fig. 2-48 b");
+								//Console.WriteLine("fig. 2-48 b");
 								skipBytes(12, b);
 
 								data.normalIndices = new short[1];
@@ -600,7 +600,7 @@ namespace LBD2OBJLib
 							else
 							{
 								// fig. 2-48 a
-								Console.WriteLine("fig. 2-48 a");
+								//Console.WriteLine("fig. 2-48 a");
 								skipBytes(4, b);
 
 								data.normalIndices = new short[1];
@@ -693,146 +693,77 @@ namespace LBD2OBJLib
 			return input != 0 ? true : false;
 		}
 
-		public static void WriteToObj(string path, TMD tmd, string prefix = "")
+		public static void WriteToObjHashed(string path, TMD tmd, string[] hashes)
 		{
-			if (separateObjects)
+			for (int i = 0; i < tmd.header.numObjects; i++)
 			{
-				for (int i = 0; i < tmd.header.numObjects; i++)
+				string fullPath = Path.Combine(path, hashes[i] + ".obj");
+				Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+				using (StreamWriter w = new StreamWriter(fullPath, false))
 				{
-					using (StreamWriter w = new StreamWriter(Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + prefix + "_" + i + ".obj", false))
-					{
-						w.WriteLine("# generated with LBD2OBJ");
-						w.WriteLine("# made by Figglewatts, 2015");
-						w.WriteLine("# check out www.lsdrevamped.net");
-						w.WriteLine("# </shamelessSelfPromotion>\n");
-
-						List<VERTEX> vertexList = new List<VERTEX>();
-						List<NORMAL> normalList = new List<NORMAL>();
-						List<UV> uvList = new List<UV>();
-						Dictionary<PRIMITIVE, List<int>> uvIndices = new Dictionary<PRIMITIVE, List<int>>();
-
-						OBJECT o = tmd.objTable[i];
-
-						foreach (VERTEX v in o.vertices)
-						{
-							vertexList.Add(v);
-						}
-						foreach (NORMAL n in o.normals)
-						{
-							normalList.Add(n);
-						}
-
-						int uvIndex = 1;
-						foreach (PRIMITIVE p in o.primitives)
-						{
-							if (!p.classification.textureMapped) { continue; }
-
-							uvIndices.Add(p, new List<int>());
-							foreach (UV uv in p.data.uvCoords)
-							{
-								uvList.Add(uv);
-								uvIndices[p].Add(uvIndex);
-								uvIndex++;
-							}
-						}
-
-						foreach (VERTEX v in vertexList)
-						{
-							writeVertex(v, w);
-						}
-						foreach (UV uv in uvList)
-						{
-							writeUV(uv, w);
-						}
-						foreach (NORMAL n in normalList)
-						{
-							writeNormal(n, w);
-						}
-
-						writeObject(w, i);
-						foreach (PRIMITIVE p in o.primitives)
-						{
-							if (p.classification.textureMapped)
-							{
-								writeFace(p, w, uvIndices[p]);
-							}
-							else
-							{
-								writeFace(p, w);
-							}
-						}
-
-					}
+					WriteObjectToObj(tmd.objTable[i], w, i);
 				}
 			}
-			else
+		}
+
+		public static void WriteObjectToObj(OBJECT o, StreamWriter w, int num)
+		{
+			w.WriteLine("# generated with LBD2OBJ");
+			w.WriteLine("# made by Figglewatts, 2015");
+			w.WriteLine("# check out www.lsdrevamped.net");
+			w.WriteLine("# </shamelessSelfPromotion>\n");
+
+			List<VERTEX> vertexList = new List<VERTEX>();
+			List<NORMAL> normalList = new List<NORMAL>();
+			List<UV> uvList = new List<UV>();
+			Dictionary<PRIMITIVE, List<int>> uvIndices = new Dictionary<PRIMITIVE, List<int>>();
+
+			foreach (VERTEX v in o.vertices)
 			{
-				using (StreamWriter w = new StreamWriter(Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + prefix + ".obj", false))
+				vertexList.Add(v);
+			}
+			foreach (NORMAL n in o.normals)
+			{
+				normalList.Add(n);
+			}
+
+			int uvIndex = 1;
+			foreach (PRIMITIVE p in o.primitives)
+			{
+				if (!p.classification.textureMapped) { continue; }
+
+				uvIndices.Add(p, new List<int>());
+				foreach (UV uv in p.data.uvCoords)
 				{
-					w.WriteLine("# generated with LBD2OBJ");
-					w.WriteLine("# made by Figglewatts, 2015");
-					w.WriteLine("# check out www.lsdrevamped.net");
-					w.WriteLine("# </shamelessSelfPromotion>");
+					uvList.Add(uv);
+					uvIndices[p].Add(uvIndex);
+					uvIndex++;
+				}
+			}
 
-					List<VERTEX> vertexList = new List<VERTEX>();
-					List<NORMAL> normalList = new List<NORMAL>();
-					List<UV> uvList = new List<UV>();
-					Dictionary<PRIMITIVE, List<int>> uvIndices = new Dictionary<PRIMITIVE, List<int>>();
+			foreach (VERTEX v in vertexList)
+			{
+				writeVertex(v, w);
+			}
+			foreach (UV uv in uvList)
+			{
+				writeUV(uv, w);
+			}
+			foreach (NORMAL n in normalList)
+			{
+				writeNormal(n, w);
+			}
 
-					int numObjects = 0;
-					foreach (OBJECT o in tmd.objTable)
-					{
-						foreach (VERTEX v in o.vertices)
-						{
-							vertexList.Add(v);
-						}
-						foreach (NORMAL n in o.normals)
-						{
-							normalList.Add(n);
-						}
-
-						int uvIndex = 1;
-						foreach (PRIMITIVE p in o.primitives)
-						{
-							if (!p.classification.textureMapped) { continue; }
-
-							uvIndices.Add(p, new List<int>());
-							foreach (UV uv in p.data.uvCoords)
-							{
-								uvList.Add(uv);
-								uvIndices[p].Add(uvIndex);
-								uvIndex++;
-							}
-						}
-
-						foreach (VERTEX v in vertexList)
-						{
-							writeVertex(v, w);
-						}
-						foreach (UV uv in uvList)
-						{
-							writeUV(uv, w);
-						}
-						foreach (NORMAL n in normalList)
-						{
-							writeNormal(n, w);
-						}
-
-						writeObject(w, numObjects);
-						foreach (PRIMITIVE p in o.primitives)
-						{
-							if (p.classification.textureMapped)
-							{
-								writeFace(p, w, uvIndices[p]);
-							}
-							else
-							{
-								writeFace(p, w);
-							}
-						}
-						numObjects++;
-					}
-
+			writeObject(w, num);
+			foreach (PRIMITIVE p in o.primitives)
+			{
+				if (p.classification.textureMapped)
+				{
+					writeFace(p, w, uvIndices[p]);
+				}
+				else
+				{
+					writeFace(p, w);
 				}
 			}
 		}

@@ -10,42 +10,37 @@ namespace LBD2OBJ
 		static void Main(string[] args)
 		{
 			bool separateObjects = false;
+
+			LBDConverter.CreateSeparateOBJsForMultipleObjects(true);
 		
 			Console.WriteLine("LBD2OBJ - Made by Figglewatts 2015");
 			if (args.Length > 0)
 			{
 				int argCount = 0;
-				if (args[0] == "-s")
-				{
-					separateObjects = true;
-					LBDConverter.CreateSeparateOBJsForMultipleObjects(separateObjects);
-					argCount++;
-				}
 				for (int i = argCount; i < args.Length; i++)
 				{
 					string arg = args[i];
 					if (Path.GetExtension(arg).ToLower().Equals(".tmd"))
 					{
 						string filePath = arg;
-						LBDConverter.WriteToObj(filePath, LBDConverter.ConvertTMD(filePath));
+
+						WriteTMDToObjects(LBDConverter.ConvertTMD(filePath), Path.GetDirectoryName(arg), "TMD");
 					}
 					else if (Path.GetExtension(arg).ToLower().Equals(".lbd"))
 					{
-						LBDConverter.CreateSeparateOBJsForMultipleObjects(separateObjects);
-						LBDConverter.WriteToObj(arg, LBDConverter.GetTMDFromLBD(arg), "_LBD");
-						LBDConverter.CreateSeparateOBJsForMultipleObjects(false);
+						WriteTMDToObjects(LBDConverter.GetTMDFromLBD(arg), Path.GetDirectoryName(arg), "LBD_TMD");
 						TMD[] tmds = LBDConverter.GetTMDFromMOMinLBD(arg);
 						if (tmds != null)
 						{
 							foreach (TMD tmd in tmds)
 							{
-								LBDConverter.WriteToObj(arg, tmd, "_MOM");
+								WriteTMDToObjects(tmd, Path.GetDirectoryName(arg), "LBD_MOM_TMD");
 							}
 						}
 					}
 					else if (Path.GetExtension(arg).ToLower().Equals(".mom"))
 					{
-						LBDConverter.WriteToObj(arg, LBDConverter.GetTMDFromMOM(arg), "_MOM");
+						WriteTMDToObjects(LBDConverter.GetTMDFromMOM(arg), Path.GetDirectoryName(arg), "MOM_TMD");
 					}
 					else
 					{
@@ -61,25 +56,23 @@ namespace LBD2OBJ
 
 				if (Path.GetExtension(filePath).ToLower().Equals(".tmd"))
 				{
-					LBDConverter.WriteToObj(filePath, LBDConverter.ConvertTMD(filePath));
+					WriteTMDToObjects(LBDConverter.ConvertTMD(filePath), Path.GetDirectoryName(filePath), "TMD");
 				}
 				else if (Path.GetExtension(filePath).ToLower().Equals(".lbd"))
 				{
-					LBDConverter.CreateSeparateOBJsForMultipleObjects(true);
-					LBDConverter.WriteToObj(filePath, LBDConverter.GetTMDFromLBD(filePath), "_LBD");
-					LBDConverter.CreateSeparateOBJsForMultipleObjects(false);
+					WriteTMDToObjects(LBDConverter.GetTMDFromLBD(filePath), Path.GetDirectoryName(filePath), "LBD_TMD");
 					TMD[] tmds = LBDConverter.GetTMDFromMOMinLBD(filePath);
 					if (tmds != null)
 					{
 						foreach (TMD tmd in tmds)
 						{
-							LBDConverter.WriteToObj(filePath, tmd, "_MOM");
+							WriteTMDToObjects(tmd, Path.GetDirectoryName(filePath), "LBD_MOM_TMD");
 						}
 					}
 				}
 				else if (Path.GetExtension(filePath).ToLower().Equals(".mom"))
 				{
-					LBDConverter.WriteToObj(filePath, LBDConverter.GetTMDFromMOM(filePath), "_MOM");
+					WriteTMDToObjects(LBDConverter.GetTMDFromMOM(filePath), Path.GetDirectoryName(filePath), "MOM_TMD");
 				}
 				else
 				{
@@ -90,8 +83,17 @@ namespace LBD2OBJ
             Console.ReadLine();
 		}
 
-		
-
-		
+		private static void WriteTMDToObjects(TMD t, string outputDir, string prefix)
+		{
+			int i = 0;
+			foreach (OBJECT o in t.objTable)
+			{
+				using (StreamWriter w = new StreamWriter(File.Open(Path.Combine(outputDir, prefix + "_OBJECT_" + i + ".obj"), FileMode.OpenOrCreate)))
+				{
+					LBDConverter.WriteObjectToObj(o, w, i);
+				}
+				i++;
+			}
+		}
 	}
 }
